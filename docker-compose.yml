@@ -1,0 +1,47 @@
+version: "3.9"
+
+networks:
+    mijnNetwerk:
+        name: mijnNetwerk
+
+services:
+    nginx:
+        build:
+            context: .
+            dockerfile: nginx.dockerfile
+        depends_on:
+            - php
+        container_name: nginx
+        ports:
+            - 80:80
+            - 443:443
+        volumes:
+            - ./src:/var/www/html
+        networks:
+            - mijnNetwerk
+
+    php:
+        build:
+            context: .
+            dockerfile: php.dockerfile
+        container_name: php
+        volumes:
+            - ./src:/var/www/html
+        networks:
+            - mijnNetwerk
+
+    mysql:
+        image: mysql:8.0.27
+        container_name: mysql
+        ports:
+            - 3306:3306
+        volumes:
+            - ./mysql:/var/lib/mysql
+        environment:
+            MYSQL_DATABASE: MyDb
+            MYSQL_USER: user
+            MYSQL_PASSWORD: secret
+            MYSQL_ROOT_PASSWORD: secret
+        networks:
+            - mijnNetwerk
+            
